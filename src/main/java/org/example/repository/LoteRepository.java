@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface LoteRepository extends JpaRepository<Lote, Long> {
     List<Lote> findByFechaVencimientoBefore(LocalDate fecha);
+    List<Lote> findByFechaVencimientoBetween(LocalDate desde, LocalDate hasta);
     List<Lote> findByProductoIdProductoAndEstado(Long idProducto, String estado);
 }

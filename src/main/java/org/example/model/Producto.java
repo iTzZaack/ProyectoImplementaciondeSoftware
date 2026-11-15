@@ -1,6 +1,9 @@
 package org.example.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "producto")
@@ -9,8 +12,16 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProducto;
 
+    @NotBlank(message = "El nombre del medicamento es obligatorio")
+    @Column(nullable = false)
     private String nombreProducto;
+
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
+
+    @NotNull(message = "El stock mínimo es obligatorio")
+    @Min(value = 0, message = "El stock mínimo no puede ser negativo")
+    @Column(nullable = false)
     private Integer stockMinimo;
 
     // Getters y Setters

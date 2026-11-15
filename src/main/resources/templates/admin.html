@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Farmacia DAISA - Panel de Administrador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #eef2f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        /* Bloque 1: Medicamentos (Morado Pastel Definido) */
+        .block-medicamentos {
+            background-color: #e6def8;
+            border: 2px solid #d1c2ed;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        /* Bloque 2: Proveedores (Azul Pastel Definido) */
+        .block-proveedores {
+            background-color: #dbeafe;
+            border: 2px solid #bfdbfe;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        /* Bloque 3: Lotes (Verde Pastel Definido) */
+        .block-lotes {
+            background-color: #d1fae5;
+            border: 2px solid #a7f3d0;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .section-header {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar Corporativo con Azul Brillante y Botón que Resalta -->
+<nav class="navbar navbar-dark bg-primary mb-4 shadow-sm py-3">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1 fw-bold fs-4 text-white">
+            <i class="fa-solid fa-user-shield me-2"></i> Farmacia DAISA | Panel de Administrador
+        </span>
+        <a href="/" class="btn btn-light text-primary fw-bold px-3 shadow-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Volver al Inicio
+        </a>
+    </div>
+</nav>
+
+<div class="container pb-5">
+
+    <!-- Alertas de Éxito / Error -->
+    <div th:if="${exito}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${exito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- SECCIÓN 1: ALERTAS CRÍTICAS DEL SISTEMA -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-3 mb-md-0">
+            <div class="card h-100 border-start border-danger border-4 bg-white">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-danger mb-3">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i> Lotes Próximos a Vencer (≤ 30 días)
+                    </h5>
+                    <p th:if="${#lists.isEmpty(lotesPorVencer)}" class="text-muted small mb-0">Sin lotes en riesgo de vencimiento.</p>
+                    <ul class="list-group list-group-flush" th:unless="${#lists.isEmpty(lotesPorVencer)}">
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent" th:each="l : ${lotesPorVencer}">
+                            <span class="fw-semibold" th:text="${'Lote: ' + l.numeroLote}"></span>
+                            <span class="badge bg-danger px-3 py-2" th:text="${l.fechaVencimiento}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 border-start border-warning border-4 bg-white">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-warning-emphasis mb-3">
+                        <i class="fa-solid fa-box-open me-2"></i> Productos en Stock Bajo
+                    </h5>
+                    <p th:if="${#lists.isEmpty(stockBajo)}" class="text-muted small mb-0">Stock saludable en todos los productos.</p>
+                    <ul class="list-group list-group-flush" th:unless="${#lists.isEmpty(stockBajo)}">
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent" th:each="p : ${stockBajo}">
+                            <span class="fw-semibold" th:text="${p.nombreProducto}"></span>
+                            <span class="badge bg-warning text-dark px-3 py-2" th:text="${'Mínimo: ' + p.stockMinimo}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOQUE 1: GESTIÓN DE MEDICAMENTOS -->
+    <div class="block-medicamentos">
+        <h4 class="section-header" style="color: #5b21b6;"><i class="fa-solid fa-pills me-2" style="color: #6f42c1;"></i> Gestión de Medicamentos</h4>
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="card h-100 bg-white">
+                    <div class="card-header text-white fw-bold py-3 px-4" style="background-color: #6f42c1;">
+                        <i class="fa-solid fa-plus-circle me-2"></i> Registrar Medicamento
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/web/productos/guardar}" th:object="${nuevoProducto}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Nombre del Medicamento</label>
+                                <input type="text" th:field="*{nombreProducto}" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Descripción</label>
+                                <input type="text" th:field="*{descripcion}" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Stock Mínimo</label>
+                                <input type="number" th:field="*{stockMinimo}" class="form-control" min="0" required>
+                            </div>
+                            <button type="submit" class="btn text-white w-100 fw-bold py-2 shadow-sm" style="background-color: #6f42c1;">Guardar Medicamento</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card h-100 bg-white">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h5 class="fw-bold text-dark mb-0">💊 Catálogo Consolidado de Medicamentos</h5>
+                    </div>
+                    <div class="card-body px-4">
+                        <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="ps-3">ID</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Stock Mín.</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="prod : ${productos}">
+                                    <td class="ps-3" th:text="${prod.idProducto}"></td>
+                                    <td class="fw-bold text-primary" th:text="${prod.nombreProducto}"></td>
+                                    <td class="small text-muted" th:text="${prod.descripcion}"></td>
+                                    <td><span class="badge bg-light text-dark border" th:text="${prod.stockMinimo}"></span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOQUE 2: GESTIÓN DE PROVEEDORES -->
+    <div class="block-proveedores">
+        <h4 class="section-header" style="color: #1d4ed8;"><i class="fa-solid fa-truck-fast me-2 text-primary"></i> Gestión de Proveedores</h4>
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="card h-100 bg-white">
+                    <div class="card-header bg-primary text-white fw-bold py-3 px-4">
+                        <i class="fa-solid fa-user-plus me-2"></i> Registrar Proveedor
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/web/proveedores/guardar}" th:object="${nuevoProveedor}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">RUC (13 dígitos)</label>
+                                <input type="text" th:field="*{ruc}" class="form-control" maxlength="13" required>
+                                <small class="text-danger" th:if="${#fields.hasErrors('ruc')}" th:errors="*{ruc}"></small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Razón Social</label>
+                                <input type="text" th:field="*{razonSocial}" class="form-control" required>
+                                <small class="text-danger" th:if="${#fields.hasErrors('razonSocial')}" th:errors="*{razonSocial}"></small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Teléfono</label>
+                                <input type="text" th:field="*{telefono}" class="form-control" maxlength="10" required>
+                                <small class="text-danger" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Dirección</label>
+                                <input type="text" th:field="*{direccion}" class="form-control" required>
+                                <small class="text-danger" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></small>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">Guardar Proveedor</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card h-100 bg-white">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h5 class="fw-bold text-dark mb-0">🚚 Directorio Consolidado de Proveedores</h5>
+                    </div>
+                    <div class="card-body px-4">
+                        <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="ps-3">ID</th>
+                                    <th>RUC</th>
+                                    <th>Razón Social</th>
+                                    <th>Teléfono</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="prov : ${proveedores}">
+                                    <td class="ps-3" th:text="${prov.idProveedor}"></td>
+                                    <td class="small text-muted" th:text="${prov.ruc}"></td>
+                                    <td class="fw-bold" th:text="${prov.razonSocial}"></td>
+                                    <td class="small" th:text="${prov.telefono}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOQUE 3: CONTROL DE LOTES E INVENTARIO -->
+    <div class="block-lotes">
+        <h4 class="section-header" style="color: #047857;"><i class="fa-solid fa-boxes-stacked text-success me-2"></i> Control de Lotes e Inventario</h4>
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="card h-100 bg-white">
+                    <div class="card-header bg-success text-white fw-bold py-3 px-4">
+                        <i class="fa-solid fa-box-archive me-2"></i> Ingreso de Nuevo Lote
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/web/lotes/guardar}" th:object="${nuevoLote}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Medicamento</label>
+                                <select th:field="*{producto.idProducto}" class="form-select" required>
+                                    <option value="">Seleccione...</option>
+                                    <option th:each="p : ${productos}" th:value="${p.idProducto}" th:text="${p.nombreProducto}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Proveedor</label>
+                                <select th:field="*{proveedor.idProveedor}" class="form-select">
+                                    <option value="">Opcional / Sin proveedor...</option>
+                                    <option th:each="prov : ${proveedores}" th:value="${prov.idProveedor}" th:text="${prov.razonSocial}"></option>
+                                </select>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label class="form-label fw-semibold text-secondary">N° Lote</label>
+                                    <input type="text" th:field="*{numeroLote}" class="form-control" required>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label fw-semibold text-secondary">Cantidad</label>
+                                    <input type="number" th:field="*{cantidad}" class="form-control" min="1" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label class="form-label fw-semibold text-secondary">F. Ingreso</label>
+                                    <input type="date" th:field="*{fechaIngreso}" class="form-control">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label fw-semibold text-secondary">Vencimiento</label>
+                                    <input type="date" th:field="*{fechaVencimiento}" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-secondary">Estado</label>
+                                <select th:field="*{estado}" class="form-select">
+                                    <option value="ACTIVO">ACTIVO</option>
+                                    <option value="INACTIVO">INACTIVO</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm">Registrar Ingreso</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card h-100 bg-white">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h5 class="fw-bold text-dark mb-0">📦 Inventario Consolidado de Lotes</h5>
+                    </div>
+                    <div class="card-body px-4">
+                        <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="ps-3">N° Lote</th>
+                                    <th>Medicamento</th>
+                                    <th>Proveedor</th>
+                                    <th>Vencimiento</th>
+                                    <th>Cant.</th>
+                                    <th>Estado</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="lote : ${lotes}">
+                                    <td class="ps-3 fw-bold" th:text="${lote.numeroLote}"></td>
+                                    <td th:text="${lote.producto != null ? lote.producto.nombreProducto : ''}"></td>
+                                    <td class="small text-muted" th:text="${lote.proveedor != null ? lote.proveedor.razonSocial : 'Sin proveedor'}"></td>
+                                    <td th:text="${lote.fechaVencimiento}"></td>
+                                    <td class="fw-semibold" th:text="${lote.cantidad}"></td>
+                                    <td>
+                                            <span class="badge"
+                                                  th:classappend="${lote.estado == 'ACTIVO' ? 'bg-success' : 'bg-secondary'}"
+                                                  th:text="${lote.estado}"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 4: AUDITORÍA Y MOVIMIENTOS -->
+    <div class="mb-4">
+        <div class="card shadow-sm bg-white border-top border-primary border-4">
+            <div class="card-header bg-primary text-white py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-white">
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i> Historial de Movimientos de Inventario
+                </h5>
+                <span class="badge bg-light text-primary fw-semibold px-3 py-2">Registro del Sistema</span>
+            </div>
+            <div class="card-body px-4 py-4">
+                <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light sticky-top">
+                        <tr>
+                            <th class="ps-3">ID</th>
+                            <th>Tipo</th>
+                            <th>Fecha y Hora</th>
+                            <th>Cantidad</th>
+                            <th>Usuario Responsable</th>
+                            <th>Lote Afectado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="mov : ${movimientos}">
+                            <td class="ps-3 fw-semibold" th:text="${mov.idMovimiento}"></td>
+                            <td>
+                                <!-- ENTRADA en Verde y SALIDA en Naranja con colores independientes -->
+                                <span class="badge px-3 py-2"
+                                      th:style="${mov.tipoMovimiento == 'ENTRADA' ? 'background-color: #198754; color: white;' : 'background-color: #fd7e14; color: white;'}"
+                                      th:text="${mov.tipoMovimiento}"></span>
+                            </td>
+                            <td class="small text-muted" th:text="${mov.fechaMovimiento}"></td>
+                            <td class="fw-bold" th:text="${mov.cantidad}"></td>
+                            <td><i class="fa-solid fa-user-circle me-1 text-muted"></i> <span th:text="${mov.usuario}"></span></td>
+                            <td class="fw-bold text-primary" th:text="${mov.lote != null ? mov.lote.numeroLote : ''}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmacia DAISA - Sistema de Gestión e Inventario</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            /* Fondo con imagen de farmacia profesional y velo oscuro elegante */
+            background: linear-gradient(135deg, rgba(13, 110, 253, 0.75), rgba(33, 37, 41, 0.85)),
+                        url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            max-width: 500px;
+            width: 100%;
+            border: none;
+        }
+        .card-header-custom {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+        }
+        /* Curva elegante que te gustó en la cabecera */
+        .card-header-custom::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: #ffffff;
+            border-radius: 50% 50% 0 0;
+        }
+        .role-card {
+            border-radius: 16px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: block;
+            padding: 18px 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        /* Efecto de movimiento que te gustó */
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(13, 110, 253, 0.15);
+            border-color: #0d6efd;
+        }
+        .role-card.admin:hover {
+            border-color: #212529;
+            box-shadow: 0 12px 25px rgba(33, 37, 41, 0.15);
+        }
+        .role-card.pharmacy:hover {
+            border-color: #ffc107;
+            box-shadow: 0 12px 25px rgba(255, 193, 7, 0.2);
+        }
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            transition: transform 0.3s ease;
+        }
+        .role-card:hover .icon-box {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container d-flex justify-content-center">
+    <div class="main-card card">
+
+        <!-- Encabezado azul con la curva elegante -->
+        <div class="card-header-custom">
+            <div class="mb-2">
+                <i class="fa-solid fa-house-chimney-medical fa-3x text-white"></i>
+            </div>
+            <h1 class="fw-bold mb-1 fs-2">Farmacia DAISA</h1>
+        </div>
+
+        <!-- Cuerpo con los accesos por perfil -->
+        <div class="card-body px-4 pt-4 pb-4">
+            <div class="text-center mb-4">
+                <span class="text-muted fw-bold small text-uppercase tracking-wider">
+                    <i class="fa-solid fa-lock-open me-1 text-primary"></i> Seleccione su perfil de acceso
+                </span>
+            </div>
+
+            <div class="d-grid gap-3">
+                <!-- Módulo Administrador -->
+                <a href="/admin" class="role-card admin">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 icon-box bg-dark text-white">
+                            <i class="fa-solid fa-user-shield fa-lg"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="fw-bold text-dark mb-0">Módulo Administrador</h5>
+                        </div>
+                        <div class="text-muted ps-2">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Módulo Farmacéutico -->
+                <a href="/farmaceutico" class="role-card pharmacy">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 icon-box bg-warning text-dark">
+                            <i class="fa-solid fa-pills fa-lg"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="fw-bold text-dark mb-0">Módulo Farmacéutico</h5>
+                        </div>
+                        <div class="text-muted ps-2">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-white text-center py-3 border-0">
+            <small class="text-muted">&copy; 2026 Farmacia DAISA </small>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

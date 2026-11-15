@@ -1,6 +1,10 @@
 package org.example.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Entity
@@ -10,19 +14,44 @@ public class Lote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLote;
 
+    @NotBlank(message = "El número de lote es obligatorio")
+    @Pattern(regexp = "^[a-zA-Z0-9\\-]+$", message = "El número de lote solo permite letras, números y guiones")
+    @Column(nullable = false)
     private String numeroLote;
+
+    @Column(nullable = false)
     private LocalDate fechaIngreso;
+
+    @NotNull(message = "La fecha de vencimiento es obligatoria")
+    @Column(nullable = false)
     private LocalDate fechaVencimiento;
+
+    @NotNull(message = "La cantidad es obligatoria")
+    @Min(value = 1, message = "La cantidad debe ser mayor a cero")
+    @Column(nullable = false)
     private Integer cantidad;
+
     private String estado;
 
+    @NotNull(message = "Debe seleccionar un producto")
     @ManyToOne
-    @JoinColumn(name = "id_producto")
+    @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
 
     @ManyToOne
     @JoinColumn(name = "id_proveedor")
     private Proveedor proveedor;
+
+    // --- AUTOMATIZAR FECHA Y ESTADO ANTES DE GUARDAR ---
+    @PrePersist
+    public void prePersist() {
+        if (this.fechaIngreso == null) {
+            this.fechaIngreso = LocalDate.now();
+        }
+        if (this.estado == null) {
+            this.estado = "ACTIVO";
+        }
+    }
 
     // --- GETTERS Y SETTERS EXPLÍCITOS ---
 

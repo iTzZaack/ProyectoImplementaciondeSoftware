@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
 import org.example.model.Lote;
 import org.example.service.LoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,8 @@ public class LoteController {
     private LoteService loteService;
 
     @PostMapping
-    public ResponseEntity<Lote> registrarIngresoLote(@RequestBody Lote lote) {
+    public ResponseEntity<Lote> registrarIngresoLote(@Valid @RequestBody Lote lote) {
+        // Al usar @Valid, se ejecutan automáticamente las restricciones de Lote.java
         return ResponseEntity.ok(loteService.registrarIngresoLote(lote));
     }
 

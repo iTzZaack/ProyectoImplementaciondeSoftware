@@ -1,6 +1,9 @@
 package org.example.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "proveedor")
@@ -9,9 +12,24 @@ public class Proveedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProveedor;
 
+    @NotBlank(message = "El RUC es obligatorio")
+    @Size(min = 13, max = 13, message = "El RUC debe tener exactamente 13 dígitos")
+    @Pattern(regexp = "^[0-9]+$", message = "El RUC solo debe contener números")
+    @Column(nullable = false, length = 13, unique = true)
     private String ruc;
+
+    @NotBlank(message = "La razón social es obligatoria")
+    @Column(nullable = false)
     private String razonSocial;
+
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Size(max = 10, message = "El teléfono no puede tener más de 10 dígitos")
+    @Pattern(regexp = "^[0-9]+$", message = "El teléfono solo debe contener números")
+    @Column(nullable = false, length = 10)
     private String telefono;
+
+    @NotBlank(message = "La dirección es obligatoria")
+    @Column(nullable = false)
     private String direccion;
 
     // Getters y Setters

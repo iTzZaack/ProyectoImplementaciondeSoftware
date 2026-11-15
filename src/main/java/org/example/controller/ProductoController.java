@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
 import org.example.model.Producto;
 import org.example.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,8 @@ public class ProductoController {
     private ProductoService productoService;
 
     @PostMapping
-    public ResponseEntity<Producto> registrarProducto(@RequestBody Producto producto) {
+    public ResponseEntity<Producto> registrarProducto(@Valid @RequestBody Producto producto) {
+        // Al agregar @Valid, Spring valida automáticamente las restricciones de Producto.java
         return ResponseEntity.ok(productoService.registrarProducto(producto));
     }
 
