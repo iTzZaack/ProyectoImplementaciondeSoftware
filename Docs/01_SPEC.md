@@ -52,7 +52,7 @@ La farmacia gestiona inventario, lotes y proveedores con hojas de cálculo y con
 | RN6 | Stock bajo: total vigente ≤ mínimo. Por vencer: faltan **30 días o menos**. | `ProductoServiceImpl.consultarStockBajo`, `LoteServiceImpl.consultarLotesPorVencer` |
 | RN7 | Prohibido registrar lotes con vencimiento ≤ fecha actual. | `LoteServiceImpl.registrarIngresoLote` |
 
-### Decisiones del cliente (de las 5 dudas)
+### Decisiones del cliente
 
 | Duda | Decisión |
 |---|---|
@@ -81,9 +81,9 @@ La farmacia gestiona inventario, lotes y proveedores con hojas de cálculo y con
 | Proveedor | `id_proveedor` | ruc (13 dígitos, único), razon_social, telefono (≤ 10 dígitos), direccion |
 | MovimientoInventario | `id_movimiento` | tipo_movimiento (`INGRESO`/`SALIDA`), fecha_movimiento, cantidad, usuario, `id_lote` (FK) |
 
-Cardinalidades: Producto 1—N Lote · Proveedor 1—N Lote · Lote 1—N Movimiento.
+*Cardinalidades:* Producto 1—N Lote · Proveedor 1—N Lote · Lote 1—N Movimiento.
 
-> **Pendiente de decidir:** el análisis usa estados `VIGENTE / POR VENCER / VENCIDO`; el código usa `ACTIVO / INACTIVO / VENCIDO`. Recomendado: mantener el del código y calcular "por vencer" dinámicamente.
+> **Nota técnica:** Se unifican los estados de lote utilizando `ACTIVO / INACTIVO / VENCIDO` en código, calculando "por vencer" de manera dinámica.
 
 ## 8. Procesos (DFD)
 
@@ -95,8 +95,8 @@ Cardinalidades: Producto 1—N Lote · Proveedor 1—N Lote · Lote 1—N Movimi
 | P4.0 | Gestionar salidas | HU-05, HU-06, RF2, RF6, RN2–RN4 |
 | P5.0 | Controlar alertas preventivas | HU-07, HU-08, RF3, RF4, RN6 |
 
-Almacenes: **D1** Productos y Lotes · **D2** Proveedores · **D3** Movimientos de inventario.
+*Almacenes:* **D1** Productos y Lotes · **D2** Proveedores · **D3** Movimientos de inventario.
 
 ## 9. Fuera de alcance
 
-Diagnóstico/prescripción · sustitución de medicamentos · facturación electrónica y contabilidad · multi-sucursal · umbral configurable.
+Diagnóstico y prescripción clínica · sustitución de medicamentos · facturación electrónica y contabilidad avanzada · soporte multi-sucursal · umbral de alerta configurable dinámicamente.
