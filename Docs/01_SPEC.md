@@ -1,6 +1,6 @@
 # 01 · SPEC — Requisitos, Reglas de Negocio y Criterios
 
-> Qué debe hacer el sistema. Origen: documento *Análisis de Negocio y Requisitos Preliminares* (Damaris Coral e Isaac Jarrín, CENESTUR).
+
 
 ## 1. Problema
 

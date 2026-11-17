@@ -5,9 +5,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+// ==========================================
+// ENTIDAD PROVEEDOR
+// ==========================================
 @Entity
 @Table(name = "proveedor")
 public class Proveedor {
+
+    // ======================================
+    // IDENTIFICADOR DE ENTRADA
+    // ======================================
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProveedor;
@@ -32,7 +39,9 @@ public class Proveedor {
     @Column(nullable = false)
     private String direccion;
 
-    // Getters y Setters
+    // ==========================================
+    // GETTERS Y SETTERS EXPLÍCITOS (SALIDA)
+    // ==========================================
     public Long getIdProveedor() { return idProveedor; }
     public void setIdProveedor(Long idProveedor) { this.idProveedor = idProveedor; }
 

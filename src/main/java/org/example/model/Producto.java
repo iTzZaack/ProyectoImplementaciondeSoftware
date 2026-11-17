@@ -5,9 +5,16 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+// ==========================================
+// ENTIDAD PRODUCTO
+// ==========================================
 @Entity
 @Table(name = "producto")
 public class Producto {
+
+    // ======================================
+    // IDENTIFICADOR DE ENTRADA
+    // ======================================
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProducto;
@@ -24,7 +31,9 @@ public class Producto {
     @Column(nullable = false)
     private Integer stockMinimo;
 
-    // Getters y Setters
+    // ==========================================
+    // GETTERS Y SETTERS EXPLÍCITOS (SALIDA)
+    // ==========================================
     public Long getIdProducto() { return idProducto; }
     public void setIdProducto(Long idProducto) { this.idProducto = idProducto; }
 

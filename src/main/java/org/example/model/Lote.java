@@ -7,9 +7,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 
+// ==========================================
+// ENTIDAD LOTE
+// ==========================================
 @Entity
 @Table(name = "lote")
 public class Lote {
+
+    // ======================================
+    // IDENTIFICADOR DE ENTRADA
+    // ======================================
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLote;
@@ -42,7 +49,9 @@ public class Lote {
     @JoinColumn(name = "id_proveedor")
     private Proveedor proveedor;
 
-    // --- AUTOMATIZAR FECHA Y ESTADO ANTES DE GUARDAR ---
+    // ==========================================
+    // AUTOMATIZAR FECHA Y ESTADO ANTES DE GUARDAR (ENTRADA)
+    // ==========================================
     @PrePersist
     public void prePersist() {
         if (this.fechaIngreso == null) {
@@ -53,7 +62,9 @@ public class Lote {
         }
     }
 
-    // --- GETTERS Y SETTERS EXPLÍCITOS ---
+    // ==========================================
+    // GETTERS Y SETTERS EXPLÍCITOS (SALIDA)
+    // ==========================================
 
     public Long getIdLote() {
         return idLote;

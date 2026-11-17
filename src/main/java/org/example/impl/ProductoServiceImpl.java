@@ -10,15 +10,24 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+// ==========================================
+// SERVICIO DE PRODUCTOS
+// ==========================================
 @Service
 public class ProductoServiceImpl implements ProductoService {
 
+    // ======================================
+    // INYECCIÓN DE DEPENDENCIAS (ENTRADA)
+    // ======================================
     @Autowired
     private ProductoRepository productoRepository;
 
     @Autowired
     private LoteRepository loteRepository;
 
+    // ======================================
+    // REGISTRO DE ENTRADA DE PRODUCTO
+    // ======================================
     @Override
     public Producto registrarProducto(Producto producto) {
         // Validar duplicados (DFD 1.2)
@@ -29,11 +38,17 @@ public class ProductoServiceImpl implements ProductoService {
         return productoRepository.save(producto);
     }
 
+    // ======================================
+    // CONSULTA DE SALIDA / CATÁLOGO
+    // ======================================
     @Override
     public List<Producto> consultarCatalogo() {
         return productoRepository.findAll();
     }
 
+    // ======================================
+    // CONSULTA DE SALIDA / STOCK BAJO
+    // ======================================
     @Override
     public List<Producto> consultarStockBajo() {
         List<Producto> todosLosProductos = productoRepository.findAll();

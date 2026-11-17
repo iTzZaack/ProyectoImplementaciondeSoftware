@@ -15,23 +15,37 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// ==========================================
+// SERVICIO DE DESPACHOS
+// ==========================================
 @Service
 public class DespachoServiceImpl implements DespachoService {
 
+    // ======================================
+    // INYECCIÓN DE DEPENDENCIAS (ENTRADA)
+    // ======================================
     @Autowired
     private LoteRepository loteRepository;
 
     @Autowired
     private MovimientoRepository movimientoRepository;
 
+    // ======================================
+    // PROCESAMIENTO Y SOLICITUD DE SALIDA
+    // ======================================
     @Override
     @Transactional
     public void solicitarDespacho(Long idProducto, Integer cantidad, String usuario) {
+        // ==================================
+        // VALIDACIÓN DE ENTRADA
+        // ==================================
         if (cantidad == null || cantidad <= 0) {
             throw new IllegalArgumentException("La cantidad a despachar debe ser mayor a cero.");
         }
 
-        // 1. Buscar todos los lotes activos/vigentes y no vencidos para este producto
+        // ==================================
+        // BÚSQUEDA DE ENTRADA (LOTES VIGENTES)
+        // ==================================
         List<Lote> lotesVigentes = loteRepository.findAll().stream()
                 .filter(l -> l.getProducto() != null
                         && l.getProducto().getIdProducto().equals(idProducto)
@@ -39,20 +53,24 @@ public class DespachoServiceImpl implements DespachoService {
                         && l.getFechaVencimiento().isAfter(LocalDate.now()))
                 .collect(Collectors.toList());
 
-        // 2. Aplicar ordenamiento FEFO (RN-4):
-        // - Primero por fecha de vencimiento más próxima (ascendente)
-        // - Desempate por fecha de ingreso más antigua o ID del lote
+        // ==================================
+        // ORDENAMIENTO INTERNO DE LOTES
+        // ==================================
         lotesVigentes.sort(Comparator.comparing(Lote::getFechaVencimiento)
                 .thenComparing(l -> l.getFechaIngreso() != null ? l.getFechaIngreso() : LocalDate.MIN)
                 .thenComparing(Lote::getIdLote));
 
-        // 3. Validar que exista suficiente stock total (RN-2: Evitar stock negativo)
+        // ==================================
+        // VALIDACIÓN DE STOCK TOTAL (ENTRADA)
+        // ==================================
         int stockTotalDisponible = lotesVigentes.stream().mapToInt(Lote::getCantidad).sum();
         if (stockTotalDisponible < cantidad) {
             throw new RuntimeException("Stock insuficiente. Disponible: " + stockTotalDisponible + ", Solicitado: " + cantidad);
         }
 
-        // 4. Despachar consumiendo los lotes según FEFO y registrando el movimiento de SALIDA
+        // ==================================
+        // PROCESAMIENTO DE SALIDA Y DESCUENTO
+        // ==================================
         int cantidadRestante = cantidad;
         for (Lote lote : lotesVigentes) {
             if (cantidadRestante <= 0) break;
@@ -76,6 +94,9 @@ public class DespachoServiceImpl implements DespachoService {
         }
     }
 
+    // ======================================
+    // REGISTRO DE SALIDA DE DESPACHO
+    // ======================================
     @Override
     public MovimientoInventario registrarSalidaDespacho(MovimientoInventario movimiento) {
         return movimientoRepository.save(movimiento);

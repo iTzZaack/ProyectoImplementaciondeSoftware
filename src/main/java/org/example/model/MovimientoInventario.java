@@ -3,9 +3,16 @@ package org.example.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+// ==========================================
+// ENTIDAD MOVIMIENTO DE INVENTARIO
+// ==========================================
 @Entity
 @Table(name = "movimiento_inventario")
 public class MovimientoInventario {
+
+    // ======================================
+    // IDENTIFICADOR DE ENTRADA
+    // ======================================
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idMovimiento;
@@ -19,7 +26,9 @@ public class MovimientoInventario {
     @JoinColumn(name = "id_lote")
     private Lote lote;
 
-    // Getters y Setters
+    // ==========================================
+    // GETTERS Y SETTERS EXPLÍCITOS (SALIDA)
+    // ==========================================
     public Long getIdMovimiento() { return idMovimiento; }
     public void setIdMovimiento(Long idMovimiento) { this.idMovimiento = idMovimiento; }
 

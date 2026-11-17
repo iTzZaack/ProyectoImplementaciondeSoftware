@@ -43,14 +43,14 @@
 
 ## Fase 4 · Despachos (Épica 3)
 
-| ID | Tarea | Trazabilidad | Estado |
-|---|---|---|---|
-| T-40 | solicitarDespacho con FEFO, stock suficiente y @Transactional | HU-05, RF2/RF6, RN2/RN4 | [hecho] |
-| T-41 | Excluir lotes vencidos del despacho | HU-06, RN3 | [hecho] |
-| T-42 | Un movimiento SALIDA por cada lote tocado | RF2 | [hecho] |
-| T-43 | DespachoController REST (/solicitar) | HU-05 | [hecho] |
-| T-44 | Endpoint /api/despachos/confirmar del diseño | Plan D1 | [por hacer] |
-| T-45 | Validar que el producto exista antes de despachar | Plan D7 | [por hacer] |
+| ID | Tarea                                                           | Trazabilidad | Estado |
+|---|-----------------------------------------------------------------|---|---|
+| T-40 | solicitarDespacho con Salida, stock suficiente y @Transactional | HU-05, RF2/RF6, RN2/RN4 | [hecho] |
+| T-41 | Excluir lotes vencidos del despacho                             | HU-06, RN3 | [hecho] |
+| T-42 | Un movimiento SALIDA por cada lote tocado                       | RF2 | [hecho] |
+| T-43 | DespachoController REST (/solicitar)                            | HU-05 | [hecho] |
+| T-44 | Endpoint /api/despachos/confirmar del diseño                    | Plan D1 | [por hacer] |
+| T-45 | Validar que el producto exista antes de despachar               | Plan D7 | [por hacer] |
 
 ## Fase 5 · Interfaz web
 
@@ -58,7 +58,7 @@
 |---|---|---|---|
 | T-50 | index.html selector de rol | RNF3 | [hecho] |
 | T-51 | admin.html (formularios producto/proveedor/lote, tablas, alertas) | HU-01/03/07/08 | [hecho] |
-| T-52 | farmaceutico.html (despacho, stock, lotes FEFO, alertas) | HU-02/05, RF6/RF8 | [hecho] |
+| T-52 | farmaceutico.html (despacho, stock, lotes, alertas) | HU-02/05, RF6/RF8 | [hecho] |
 | T-53 | Mensajes de éxito/error con flash attributes | RNF3 | [hecho] |
 
 ## Fase 6 · Pendientes para cumplir el análisis completo

@@ -6,6 +6,7 @@ import org.example.model.Producto;
 import org.example.model.Proveedor;
 import org.example.repository.LoteRepository;
 import org.example.repository.MovimientoRepository;
+import org.example.repository.ProductoRepository;
 import org.example.repository.ProveedorRepository;
 import org.example.service.DespachoService;
 import org.example.service.LoteService;
@@ -24,9 +25,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// ==========================================
+// CONTROLADOR DE VISTAS DE FARMACIA
+// ==========================================
 @Controller
 public class VistaFarmaciaController {
 
+    // ======================================
+    // INYECCIÓN DE DEPENDENCIAS (ENTRADA)
+    // ======================================
     @Autowired
     private ProductoService productoService;
 
@@ -37,6 +44,9 @@ public class VistaFarmaciaController {
     private DespachoService despachoService;
 
     @Autowired
+    private ProductoRepository productoRepository;
+
+    @Autowired
     private LoteRepository loteRepository;
 
     @Autowired
@@ -45,11 +55,17 @@ public class VistaFarmaciaController {
     @Autowired
     private MovimientoRepository movimientoRepository;
 
+    // ==========================================
+    // RUTA PRINCIPAL (SELECTOR DE ROLES) (SALIDA)
+    // ==========================================
     @GetMapping("/")
     public String index() {
         return "index";
     }
 
+    // ==========================================
+    // PANEL DE ADMINISTRACIÓN (VISTA Y SALIDA)
+    // ==========================================
     @GetMapping("/admin")
     public String panelAdmin(Model model) {
         if (!model.containsAttribute("nuevoProducto")) {
@@ -62,20 +78,25 @@ public class VistaFarmaciaController {
             model.addAttribute("nuevoLote", new Lote());
         }
 
-        model.addAttribute("productos", productoService.consultarCatalogo());
-        model.addAttribute("proveedores", proveedorRepository.findAll());
-        model.addAttribute("lotes", loteRepository.findAll());
-        model.addAttribute("movimientos", movimientoRepository.findAll());
+        // Listas ordenadas de forma descendente (para admin)
+        model.addAttribute("productos", productoRepository.findAllByOrderByIdProductoDesc());
+        model.addAttribute("proveedores", proveedorRepository.findAllByOrderByIdProveedorDesc());
+        model.addAttribute("lotes", loteRepository.findAllByOrderByIdLoteDesc());
+        model.addAttribute("movimientos", movimientoRepository.findAllByOrderByIdMovimientoDesc());
+
+        // Alertas del sistema
         model.addAttribute("stockBajo", productoService.consultarStockBajo());
         model.addAttribute("lotesPorVencer", loteService.consultarLotesPorVencer());
 
         return "admin";
     }
 
+    // ==========================================
+    // PANEL DE FARMACÉUTICO (SALIDA)
+    // ==========================================
     @GetMapping("/farmaceutico")
     public String panelFarmaceutico(Model model) {
-        // FILTRAR: Mostrar únicamente los productos que tienen lotes activos/vigentes,
-        // fecha de vencimiento posterior a hoy y cantidad disponible mayor a 0.
+        // FILTRAR: Mostrar únicamente productos con stock útil y lotes vigentes
         List<Producto> productosConStock = productoService.consultarCatalogo().stream()
                 .filter(p -> loteRepository.findAll().stream()
                         .anyMatch(l -> l.getProducto() != null
@@ -85,7 +106,7 @@ public class VistaFarmaciaController {
                                 && l.getCantidad() > 0))
                 .collect(Collectors.toList());
 
-        // Lotes vigentes con stock, ordenados por vencimiento más cercano (FEFO) y luego por ingreso
+        // Algoritmo salida estricto: Ordenado por fecha de vencimiento más cercana
         List<Lote> lotesVigentes = loteRepository.findAll().stream()
                 .filter(l -> ("ACTIVO".equalsIgnoreCase(l.getEstado()) || "VIGENTE".equalsIgnoreCase(l.getEstado()))
                         && l.getFechaVencimiento().isAfter(LocalDate.now())
@@ -94,7 +115,7 @@ public class VistaFarmaciaController {
                         .thenComparing(l -> l.getFechaIngreso() != null ? l.getFechaIngreso() : LocalDate.MIN))
                 .collect(Collectors.toList());
 
-        // Stock disponible total por producto
+        // Cálculo de stock disponible real por producto
         Map<Long, Integer> stockPorProducto = new HashMap<>();
         for (Lote l : lotesVigentes) {
             if (l.getProducto() != null) {
@@ -111,6 +132,9 @@ public class VistaFarmaciaController {
         return "farmaceutico";
     }
 
+    // ==========================================
+    // REGISTRO DE NUEVOS MEDICAMENTOS (ENTRADA)
+    // ==========================================
     @PostMapping("/web/productos/guardar")
     public String guardarProducto(@Valid @ModelAttribute("nuevoProducto") Producto producto,
                                   BindingResult result,
@@ -130,6 +154,9 @@ public class VistaFarmaciaController {
         return "redirect:/admin";
     }
 
+    // ==========================================
+    // REGISTRO DE PROVEEDORES (ENTRADA)
+    // ==========================================
     @PostMapping("/web/proveedores/guardar")
     public String guardarProveedor(@Valid @ModelAttribute("nuevoProveedor") Proveedor proveedor,
                                    BindingResult result,
@@ -149,6 +176,9 @@ public class VistaFarmaciaController {
         return "redirect:/admin";
     }
 
+    // ==========================================
+    // INGRESO DE LOTES Y VALIDACIÓN DE VENCIMIENTO (ENTRADA)
+    // ==========================================
     @PostMapping("/web/lotes/guardar")
     public String guardarLote(@Valid @ModelAttribute("nuevoLote") Lote lote,
                               BindingResult result,
@@ -176,6 +206,9 @@ public class VistaFarmaciaController {
         return "redirect:/admin";
     }
 
+    // ==========================================
+    // PROCESAMIENTO DE DESPACHOS (SALIDA)
+    // ==========================================
     @PostMapping("/web/despachos/registrar")
     public String registrarDespacho(@RequestParam Long idProducto,
                                     @RequestParam Integer cantidad,
@@ -183,7 +216,7 @@ public class VistaFarmaciaController {
                                     RedirectAttributes flash) {
         try {
             despachoService.solicitarDespacho(idProducto, cantidad, usuario);
-            flash.addFlashAttribute("exito", "Despacho realizado con éxito (Criterio FEFO aplicado).");
+            flash.addFlashAttribute("exito", "Despacho realizado con éxito.");
         } catch (Exception e) {
             flash.addFlashAttribute("error", "No se pudo despachar: " + e.getMessage());
         }

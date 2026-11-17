@@ -13,15 +13,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.scheduling.annotation.Scheduled;
 
+// ==========================================
+// SERVICIO DE LOTES
+// ==========================================
 @Service
 public class LoteServiceImpl implements LoteService {
 
+    // ======================================
+    // INYECCIÓN DE DEPENDENCIAS (ENTRADA)
+    // ======================================
     @Autowired
     private LoteRepository loteRepository;
 
     @Autowired
     private MovimientoRepository movimientoInventarioRepository;
 
+    // ======================================
+    // REGISTRO DE ENTRADA DE LOTE
+    // ======================================
     @Override
     public Lote registrarIngresoLote(Lote lote) {
         // La fecha de ingreso se asigna sola si no viene
@@ -31,7 +40,7 @@ public class LoteServiceImpl implements LoteService {
 
         // Validar que el lote no esté vencido (RN-7: fecha menor o igual a hoy no se acepta)
         if (!lote.getFechaVencimiento().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("No se puede registrar un lote vencido (RN-7).");
+            throw new IllegalArgumentException("No se puede registrar un lote vencido .");
         }
 
         // NUEVA VALIDACIÓN: La fecha de vencimiento debe ser posterior a la fecha de ingreso
@@ -58,6 +67,9 @@ public class LoteServiceImpl implements LoteService {
         return loteGuardado;
     }
 
+    // ======================================
+    // CONSULTA DE SALIDA / LOTES POR VENCER
+    // ======================================
     @Override
     public List<Lote> consultarLotesPorVencer() {
         // RN-6: lotes vigentes (no vencidos) a 30 días o menos de vencer
@@ -68,6 +80,9 @@ public class LoteServiceImpl implements LoteService {
                 .collect(Collectors.toList());
     }
 
+    // ======================================
+    // BLOQUEO AUTOMÁTICO DE SALIDA (VENCIDOS)
+    // ======================================
     // RN-3: bloqueo automático de lotes vencidos (se ejecuta al iniciar y cada hora)
     @Scheduled(fixedRate = 3600000)
     public void bloquearLotesVencidosAutomaticamente() {
@@ -80,6 +95,9 @@ public class LoteServiceImpl implements LoteService {
         }
     }
 
+    // ======================================
+    // BLOQUEO MANUAL DE SALIDA (LOTE VENCIDO)
+    // ======================================
     @Override
     public void bloquearLoteVencido(Long idLote) {
         Lote lote = loteRepository.findById(idLote)

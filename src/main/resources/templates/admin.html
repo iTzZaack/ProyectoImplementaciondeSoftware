@@ -16,7 +16,6 @@
             border-radius: 16px;
             overflow: hidden;
         }
-        /* Bloque 1: Medicamentos (Morado Pastel Definido) */
         .block-medicamentos {
             background-color: #e6def8;
             border: 2px solid #d1c2ed;
@@ -24,7 +23,6 @@
             padding: 20px;
             margin-bottom: 30px;
         }
-        /* Bloque 2: Proveedores (Azul Pastel Definido) */
         .block-proveedores {
             background-color: #dbeafe;
             border: 2px solid #bfdbfe;
@@ -32,7 +30,6 @@
             padding: 20px;
             margin-bottom: 30px;
         }
-        /* Bloque 3: Lotes (Verde Pastel Definido) */
         .block-lotes {
             background-color: #d1fae5;
             border: 2px solid #a7f3d0;
@@ -51,7 +48,9 @@
 </head>
 <body>
 
-<!-- Navbar Corporativo con Azul Brillante y Botón que Resalta -->
+<!-- ========================================== -->
+<!-- BARRA DE NAVEGACIÓN SUPERIOR (ENTRADA) -->
+<!-- ========================================== -->
 <nav class="navbar navbar-dark bg-primary mb-4 shadow-sm py-3">
     <div class="container">
         <span class="navbar-brand mb-0 h1 fw-bold fs-4 text-white">
@@ -65,7 +64,9 @@
 
 <div class="container pb-5">
 
-    <!-- Alertas de Éxito / Error -->
+    <!-- ========================================== -->
+    <!-- MENSAJES DE ALERTA DEL SISTEMA (SALIDA) -->
+    <!-- ========================================== -->
     <div th:if="${exito}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
         <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${exito}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -75,7 +76,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- SECCIÓN 1: ALERTAS CRÍTICAS DEL SISTEMA -->
+    <!-- ========================================== -->
+    <!-- SECCIÓN 1: ALERTAS CRÍTICAS CON SCROLL -->
+    <!-- ========================================== -->
     <div class="row mb-5">
         <div class="col-md-6 mb-3 mb-md-0">
             <div class="card h-100 border-start border-danger border-4 bg-white">
@@ -84,12 +87,14 @@
                         <i class="fa-solid fa-triangle-exclamation me-2"></i> Lotes Próximos a Vencer (≤ 30 días)
                     </h5>
                     <p th:if="${#lists.isEmpty(lotesPorVencer)}" class="text-muted small mb-0">Sin lotes en riesgo de vencimiento.</p>
-                    <ul class="list-group list-group-flush" th:unless="${#lists.isEmpty(lotesPorVencer)}">
-                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent" th:each="l : ${lotesPorVencer}">
-                            <span class="fw-semibold" th:text="${'Lote: ' + l.numeroLote}"></span>
-                            <span class="badge bg-danger px-3 py-2" th:text="${l.fechaVencimiento}"></span>
-                        </li>
-                    </ul>
+                    <div style="max-height: 220px; overflow-y: auto; overflow-x: hidden;" th:unless="${#lists.isEmpty(lotesPorVencer)}">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent" th:each="l : ${lotesPorVencer}">
+                                <span class="fw-semibold" th:text="${'Lote: ' + l.numeroLote}"></span>
+                                <span class="badge bg-danger px-3 py-2" th:text="${l.fechaVencimiento}"></span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,25 +105,29 @@
                         <i class="fa-solid fa-box-open me-2"></i> Productos en Stock Bajo
                     </h5>
                     <p th:if="${#lists.isEmpty(stockBajo)}" class="text-muted small mb-0">Stock saludable en todos los productos.</p>
-                    <ul class="list-group list-group-flush" th:unless="${#lists.isEmpty(stockBajo)}">
-                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent" th:each="p : ${stockBajo}">
-                            <span class="fw-semibold" th:text="${p.nombreProducto}"></span>
-                            <span class="badge bg-warning text-dark px-3 py-2" th:text="${'Mínimo: ' + p.stockMinimo}"></span>
-                        </li>
-                    </ul>
+                    <div style="max-height: 220px; overflow-y: auto; overflow-x: hidden;" th:unless="${#lists.isEmpty(stockBajo)}">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent" th:each="p : ${stockBajo}">
+                                <span class="fw-semibold" th:text="${p.nombreProducto}"></span>
+                                <span class="badge bg-warning text-dark px-3 py-2" th:text="${'Mínimo: ' + p.stockMinimo}"></span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- BLOQUE 1: GESTIÓN DE MEDICAMENTOS -->
+    <!-- ========================================== -->
     <div class="block-medicamentos">
         <h4 class="section-header" style="color: #5b21b6;"><i class="fa-solid fa-pills me-2" style="color: #6f42c1;"></i> Gestión de Medicamentos</h4>
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
                 <div class="card h-100 bg-white">
                     <div class="card-header text-white fw-bold py-3 px-4" style="background-color: #6f42c1;">
-                        <i class="fa-solid fa-plus-circle me-2"></i> Registrar Medicamento
+                        <i class="fa-solid fa-plus-circle me-2"></i> Registrar Medicamento (Entrada)
                     </div>
                     <div class="card-body p-4">
                         <form th:action="@{/web/productos/guardar}" th:object="${nuevoProducto}" method="post">
@@ -142,7 +151,7 @@
             <div class="col-lg-8">
                 <div class="card h-100 bg-white">
                     <div class="card-header bg-white border-0 pt-4 px-4">
-                        <h5 class="fw-bold text-dark mb-0">💊 Catálogo Consolidado de Medicamentos</h5>
+                        <h5 class="fw-bold text-dark mb-0">💊 Catálogo Consolidado de Medicamentos (Salida)</h5>
                     </div>
                     <div class="card-body px-4">
                         <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
@@ -171,14 +180,16 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- BLOQUE 2: GESTIÓN DE PROVEEDORES -->
+    <!-- ========================================== -->
     <div class="block-proveedores">
         <h4 class="section-header" style="color: #1d4ed8;"><i class="fa-solid fa-truck-fast me-2 text-primary"></i> Gestión de Proveedores</h4>
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
                 <div class="card h-100 bg-white">
                     <div class="card-header bg-primary text-white fw-bold py-3 px-4">
-                        <i class="fa-solid fa-user-plus me-2"></i> Registrar Proveedor
+                        <i class="fa-solid fa-user-plus me-2"></i> Registrar Proveedor (Entrada)
                     </div>
                     <div class="card-body p-4">
                         <form th:action="@{/web/proveedores/guardar}" th:object="${nuevoProveedor}" method="post">
@@ -210,7 +221,7 @@
             <div class="col-lg-8">
                 <div class="card h-100 bg-white">
                     <div class="card-header bg-white border-0 pt-4 px-4">
-                        <h5 class="fw-bold text-dark mb-0">🚚 Directorio Consolidado de Proveedores</h5>
+                        <h5 class="fw-bold text-dark mb-0">🚚 Directorio Consolidado de Proveedores (Salida)</h5>
                     </div>
                     <div class="card-body px-4">
                         <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
@@ -239,14 +250,16 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- BLOQUE 3: CONTROL DE LOTES E INVENTARIO -->
+    <!-- ========================================== -->
     <div class="block-lotes">
         <h4 class="section-header" style="color: #047857;"><i class="fa-solid fa-boxes-stacked text-success me-2"></i> Control de Lotes e Inventario</h4>
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
                 <div class="card h-100 bg-white">
                     <div class="card-header bg-success text-white fw-bold py-3 px-4">
-                        <i class="fa-solid fa-box-archive me-2"></i> Ingreso de Nuevo Lote
+                        <i class="fa-solid fa-box-archive me-2"></i> Ingreso de Nuevo Lote (Entrada)
                     </div>
                     <div class="card-body p-4">
                         <form th:action="@{/web/lotes/guardar}" th:object="${nuevoLote}" method="post">
@@ -299,7 +312,7 @@
             <div class="col-lg-8">
                 <div class="card h-100 bg-white">
                     <div class="card-header bg-white border-0 pt-4 px-4">
-                        <h5 class="fw-bold text-dark mb-0">📦 Inventario Consolidado de Lotes</h5>
+                        <h5 class="fw-bold text-dark mb-0">📦 Inventario Consolidado de Lotes (Salida)</h5>
                     </div>
                     <div class="card-body px-4">
                         <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
@@ -322,9 +335,9 @@
                                     <td th:text="${lote.fechaVencimiento}"></td>
                                     <td class="fw-semibold" th:text="${lote.cantidad}"></td>
                                     <td>
-                                            <span class="badge"
-                                                  th:classappend="${lote.estado == 'ACTIVO' ? 'bg-success' : 'bg-secondary'}"
-                                                  th:text="${lote.estado}"></span>
+                                        <span class="badge"
+                                              th:classappend="${lote.estado == 'ACTIVO' ? 'bg-success' : 'bg-secondary'}"
+                                              th:text="${lote.estado}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -336,12 +349,14 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- SECCIÓN 4: AUDITORÍA Y MOVIMIENTOS -->
+    <!-- ========================================== -->
     <div class="mb-4">
         <div class="card shadow-sm bg-white border-top border-primary border-4">
             <div class="card-header bg-primary text-white py-3 px-4 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-white">
-                    <i class="fa-solid fa-clock-rotate-left me-2"></i> Historial de Movimientos de Inventario
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i> Historial de Movimientos de Inventario (Salida)
                 </h5>
                 <span class="badge bg-light text-primary fw-semibold px-3 py-2">Registro del Sistema</span>
             </div>
@@ -362,7 +377,6 @@
                         <tr th:each="mov : ${movimientos}">
                             <td class="ps-3 fw-semibold" th:text="${mov.idMovimiento}"></td>
                             <td>
-                                <!-- ENTRADA en Verde y SALIDA en Naranja con colores independientes -->
                                 <span class="badge px-3 py-2"
                                       th:style="${mov.tipoMovimiento == 'ENTRADA' ? 'background-color: #198754; color: white;' : 'background-color: #fd7e14; color: white;'}"
                                       th:text="${mov.tipoMovimiento}"></span>

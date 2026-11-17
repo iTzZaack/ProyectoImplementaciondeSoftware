@@ -4,6 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- ========================================== -->
+    <!-- CONFIGURACIÓN PADRE / SPRING BOOT (ENTRADA) -->
+    <!-- ========================================== -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -15,30 +18,43 @@
     <artifactId>Sistema-Farmacia</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <!-- ========================================== -->
+    <!-- PROPIEDADES DEL PROYECTO (CONFIGURACIÓN) -->
+    <!-- ========================================== -->
     <properties>
         <java.version>24</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- ========================================== -->
+    <!-- DEPENDENCIAS DEL SISTEMA (ENTRADA / SALIDA) -->
+    <!-- ========================================== -->
     <dependencies>
+        <!-- Módulo Web / Controladores REST y MVC -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- Motor de Plantillas Thymeleaf (Vistas) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+
+        <!-- Persistencia de Datos con Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!-- Agregado para las validaciones de RUC, teléfono y campos obligatorios -->
+
+        <!-- Validaciones de RUC, Teléfono y Campos Obligatorios -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Conector para Base de Datos MySQL -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
@@ -46,6 +62,9 @@
         </dependency>
     </dependencies>
 
+    <!-- ========================================== -->
+    <!-- CONFIGURACIÓN DE CONSTRUCCIÓN Y PLUGINS -->
+    <!-- ========================================== -->
     <build>
         <plugins>
             <plugin>

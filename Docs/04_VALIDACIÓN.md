@@ -4,7 +4,7 @@
 
 ## 1. Veredicto
 
-El proyecto está bien encaminado: respeta la arquitectura por capas del análisis, implementa FEFO, bloqueo por vencimiento en despacho, RN7, alertas de 30 días y stock bajo, con trazabilidad por movimientos. Hay 3 problemas de prioridad alta que conviene corregir antes de entregar y varios puntos de mejora.
+El proyecto está bien encaminado: respeta la arquitectura por capas del análisis, implementa Salida, bloqueo por vencimiento en despacho, RN7, alertas de 30 días y stock bajo, con trazabilidad por movimientos. Hay 3 problemas de prioridad alta que conviene corregir antes de entregar y varios puntos de mejora.
 
 | Resultado | Cantidad |
 |---|---|
@@ -68,15 +68,15 @@ Leyenda: [cumple] · [parcial] · [no cumple] · [sin medir]
 
 ### Requisitos funcionales
 
-| ID | Estado | Observación |
-|---|---|---|
-| RF1 | [cumple] | Stock mínimo individual |
-| RF2 | [cumple] | Salidas con movimiento por lote |
-| RF3 | [cumple] | Panel de stock bajo en admin y farmacéutico |
-| RF4 | [cumple] | Panel de lotes por vencer |
-| RF5 | [parcial] | Se registra y lista, pero sin ProveedorService ni API (H-08) |
-| RF6 | [cumple] | Tabla de lotes vigentes ordenada FEFO |
-| RF7 | [cumple] | Ingreso con todos los campos y rechazo de vencidos |
+| ID | Estado | Observación                                                                    |
+|---|---|--------------------------------------------------------------------------------|
+| RF1 | [cumple] | Stock mínimo individual                                                        |
+| RF2 | [cumple] | Salidas con movimiento por lote                                                |
+| RF3 | [cumple] | Panel de stock bajo en admin y farmacéutico                                    |
+| RF4 | [cumple] | Panel de lotes por vencer                                                      |
+| RF5 | [parcial] | Se registra y lista, pero sin ProveedorService ni API (H-08)                   |
+| RF6 | [cumple] | Tabla de lotes vigentes ordenada Salida                                        |
+| RF7 | [cumple] | Ingreso con todos los campos y rechazo de vencidos                             |
 | RF8 | [parcial] | Visible en pantalla; no hay endpoint REST de stock por producto/lote/proveedor |
 
 ### Reglas de negocio
@@ -103,27 +103,16 @@ Leyenda: [cumple] · [parcial] · [no cumple] · [sin medir]
 
 ## 4. Plan de pruebas manuales
 
-| # | Prueba | Pasos | Resultado esperado | Valida |
-|---|---|---|---|---|
-| P-01 | Registrar producto válido | Admin → nuevo medicamento "Ibuprofeno 400 mg", mínimo 20 | Mensaje de éxito; aparece en catálogo | HU-01 |
-| P-02 | Producto duplicado | Repetir "ibuprofeno 400 mg" | Error "Ya existe un medicamento…" | HU-01 |
-| P-03 | Stock mínimo negativo | Mínimo = -1 | Error de validación | HU-01 |
-| P-04 | Proveedor válido | RUC de 13 dígitos, teléfono válido | Guardado correcto | RF5 |
-| P-07 | Ingresar lote válido | Lote con datos correctos y fecha futura | Épico; movimiento INGRESO registrado | HU-03 |
-| P-08 | Lote vencido | Vencimiento menor o igual a hoy | Rechazo con mensaje descriptivo | HU-04 |
-| P-13 | FEFO simple | Despachar unidades de un producto con múltiples lotes | Se descuentan primero del lote que vence antes | HU-05 |
-| P-16 | Stock insuficiente | Despachar más que el stock vigente total | Error de stock insuficiente y reversión transaccional | RN2 |
-| P-21 | Stock bajo | Disminuir stock por debajo del mínimo configurado | El producto aparece en la sección de alertas de stock bajo | HU-08 |
-| P-25 | Vista farmacéutico | Abrir /farmaceutico | Visualización de lotes vigentes en orden FEFO | HU-02, RF6 |
+| # | Prueba                    | Pasos | Resultado esperado                                         | Valida |
+|---|---------------------------|---|------------------------------------------------------------|---|
+| P-01 | Registrar producto válido | Admin → nuevo medicamento "Ibuprofeno 400 mg", mínimo 20 | Mensaje de éxito; aparece en catálogo                      | HU-01 |
+| P-02 | Producto duplicado        | Repetir "ibuprofeno 400 mg" | Error "Ya existe un medicamento…"                          | HU-01 |
+| P-03 | Stock mínimo negativo     | Mínimo = -1 | Error de validación                                        | HU-01 |
+| P-04 | Proveedor válido          | RUC de 13 dígitos, teléfono válido | Guardado correcto                                          | RF5 |
+| P-07 | Ingresar lote válido      | Lote con datos correctos y fecha futura | Épico; movimiento INGRESO registrado                       | HU-03 |
+| P-08 | Lote vencido              | Vencimiento menor o igual a hoy | Rechazo con mensaje descriptivo                            | HU-04 |
+| P-13 | Salida simple             | Despachar unidades de un producto con múltiples lotes | Se descuentan primero del lote que vence antes             | HU-05 |
+| P-16 | Stock insuficiente        | Despachar más que el stock vigente total | Error de stock insuficiente y reversión transaccional      | RN2 |
+| P-21 | Stock bajo                | Disminuir stock por debajo del mínimo configurado | El producto aparece en la sección de alertas de stock bajo | HU-08 |
+| P-25 | Vista farmacéutico        | Abrir /farmaceutico | Visualización de lotes vigentes en orden de Salida         | HU-02, RF6 |
 
-## 5. Correcciones sugeridas (Código clave)
-
-H-01 — Activar el bloqueo automático en la clase principal:
-```java
-@SpringBootApplication
-@EnableScheduling
-public class Main {
-    public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
-    }
-}
